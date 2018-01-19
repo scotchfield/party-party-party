@@ -1,0 +1,15 @@
+{
+  "name": "party-party-party",
+  "version": "1.0.0",
+  "description": "Turn a source image into an animated party emoji",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "scotchfield",
+  "license": "MIT",
+  "dependencies": {
+    "get-pixels": "^3.3.0",
+    "gif-encoder": "^0.6.1"
+  }
+}
