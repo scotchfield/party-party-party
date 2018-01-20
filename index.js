@@ -27,8 +27,10 @@ const colours = [
 const partyOffset = [];
 const partyRadius = 10;
 colours.forEach((c, colourIndex) => {
-    const x = partyRadius * Math.sin(2 * Math.PI * (-colourIndex / colours.length));
-    const y = partyRadius * Math.cos(2 * Math.PI * (-colourIndex / colours.length));
+    const x =
+        partyRadius * Math.sin(2 * Math.PI * (-colourIndex / colours.length));
+    const y =
+        partyRadius * Math.cos(2 * Math.PI * (-colourIndex / colours.length));
     partyOffset.push([Math.round(x), Math.round(y)]);
 });
 
@@ -72,7 +74,7 @@ function imageData(err, pixels) {
             return -1;
         }
 
-        return result = arr[x + y * shape[0]];
+        return (result = arr[x + y * shape[0]]);
     }
 
     colours.forEach(function(c, colourIndex) {
@@ -81,7 +83,12 @@ function imageData(err, pixels) {
 
         for (var y = 0; y < shape[1]; y += 1) {
             for (var x = 0; x < shape[0]; x += 1) {
-                let g = getPixelValue(greyscale, shape, x + offset[0], y + offset[1]);
+                let g = getPixelValue(
+                    greyscale,
+                    shape,
+                    x + offset[0],
+                    y + offset[1]
+                );
 
                 if (g === -1) {
                     p.push(0);
