@@ -37,6 +37,7 @@ colours.forEach((c, colourIndex) => {
 function imageData(err, pixels) {
     if (err) {
         console.log("Invalid image path..");
+        console.log(err);
         return;
     }
 
