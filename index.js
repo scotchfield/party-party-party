@@ -45,7 +45,7 @@ function imageData(err, pixels) {
 
     for (var i = 0; i < pixels.data.length / 4; i += 1) {
         const idx = i * 4;
-        if (pixels.data[idx + 3] < 32) {
+        if (pixels.data[idx + 3] < 64) {
             greyscale.push(-1);
         } else {
             const avg =
