@@ -13,5 +13,7 @@ If you'd like to create emojis for Slack, make sure your input image is 128x128 
 
 `const partyRadius = 10;`
 
+![Party Heart Emoji](https://raw.githubusercontent.com/scotchfield/party-party-party/master/heart.gif "Party Heart Emoji")
+
 ## Usage
 `node index.js smile.png party.gif`
