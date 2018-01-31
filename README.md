@@ -1,19 +1,24 @@
 # party-party-party
-Turn a source image into an animated party emoji
+Turn a source image into an animated party emoji!
 
 This smiling emoji is pretty cool:
 
-![Smiling Emoji](https://raw.githubusercontent.com/scotchfield/party-party-party/master/smile.png "Smiling Emoji")
+![Smiling Emoji](./smile.png "Smiling Emoji")
 
 However, it might be jealous of all those parrots and their parties. Let's help out our emoji friend.
 
-![Party Smiling Emoji](https://raw.githubusercontent.com/scotchfield/party-party-party/master/party-smile.gif "Party Smiling Emoji")
-
-If you'd like to create emojis for Slack, make sure your input image is 128x128 (or less). If you want to tune the radius of the animating circle, you can change the following line: (larger values indicate more distance from the origin, i.e. a wider circle)
-
-`const partyRadius = 10;`
-
-![Party Heart Emoji](https://raw.githubusercontent.com/scotchfield/party-party-party/master/heart.gif "Party Heart Emoji")
+![Party Smiling Emoji](./party-smile.gif "Party Smiling Emoji")
 
 ## Usage
 `node index.js smile.png party.gif`
+
+Note: If you'd like to create emojis for Slack, make sure your input image is 128x128 (or less).
+
+### Radius
+If you want to tune the radius of the animating circle, you can use the `--radius=<n>` option. The default for this is `10`.
+
+For example, `node index.js --radius=0 smile.png party.gif` will create a party version of `smile.png` where the image has an ounce or two less party.
+
+![Still Party Smile Emoji](./still-party-smile.gif "Still Party Smile Emoji")
+
+![Party Heart Emoji](./heart.gif "Party Heart Emoji")
