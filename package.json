@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "get-pixels": "^3.3.0",
-    "gif-encoder": "^0.6.1"
+    "gif-encoder": "^0.6.1",
+    "minimist": "^1.2.0"
   }
 }

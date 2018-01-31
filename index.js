@@ -1,14 +1,33 @@
 const fs = require("fs");
+const minimist = require("minimist");
 const getPixels = require("get-pixels");
 const gifEncoder = require("gif-encoder");
 
-if (process.argv.length <= 3) {
+// Process the arguments we're launched with and get rid of anything we won't be using.
+args = minimist(process.argv, {
+    default: {
+        "radius": 10, // 0 = regular stationary party
+    },
+    unknown: arg => {
+        // Filter out node and our index.js.
+        // This ensures that the args._ array will just be the files we process
+        if (arg === process.execPath) return false;
+        if (arg === __filename) return false;
+        return true;
+    }
+});
+
+//TODO(somewhatabstract): Make this code an importable module and then provide a simple wrapper for direct CLI usage
+//TODO(somewhatabstract): Consider adding some scaling or a --fitslack option?
+//TODO(somewhatabstract): Add ability to specify lots of different files at once.
+//TODO(somewhatabstract): Add error checks and useful help text.
+if (args._.length !== 2) {
     console.log("Usage: " + __filename + " input.png output.gif");
     process.exit(-1);
 }
 
-const inputFilename = process.argv[2];
-const outputFilename = process.argv[3];
+const inputFilename = args._[0];
+const outputFilename = args._[1];
 
 // The party palette. Party on, Sirocco!
 const colours = [
@@ -24,8 +43,9 @@ const colours = [
     [255, 105, 104]
 ];
 
+//TODO(somewhatabstract): Add other variations to radius, like tilt (for bobbling side to side)
 const partyOffset = [];
-const partyRadius = 10;
+const partyRadius = parseInt(args.radius);
 colours.forEach((c, colourIndex) => {
     const x =
         partyRadius * Math.sin(2 * Math.PI * (-colourIndex / colours.length));
@@ -34,14 +54,7 @@ colours.forEach((c, colourIndex) => {
     partyOffset.push([Math.round(x), Math.round(y)]);
 });
 
-function imageData(err, pixels) {
-    if (err) {
-        console.log("Invalid image path..");
-        console.log(err);
-        return;
-    }
-
-    const { shape } = pixels;
+function toGreyscale(pixels) {
     const greyscale = [];
 
     for (var i = 0; i < pixels.data.length / 4; i += 1) {
@@ -57,6 +70,18 @@ function imageData(err, pixels) {
             greyscale.push(avg);
         }
     }
+    return greyscale;
+}
+
+function imageData(err, pixels) {
+    if (err) {
+        console.log("Invalid image path..");
+        console.log(err);
+        return;
+    }
+
+    const { shape } = pixels;
+    const greyscale = toGreyscale(pixels);
 
     const gif = new gifEncoder(shape[0], shape[1]);
     const outputFile = fs.createWriteStream(outputFilename);
