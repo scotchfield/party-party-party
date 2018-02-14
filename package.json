@@ -23,6 +23,9 @@
     "animation"
   ],
   "main": "index.js",
+  "bin": {
+    "ppp": "./bin/ppp"
+  },
   "scripts": {
   },
   "dependencies": {
