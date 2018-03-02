@@ -17,12 +17,35 @@ const colours = [
 ];
 
 /**
+ * Rotates the point [x, y] frac of a rotation around the center of the image.
+ *
+ * @param {number} x The starting x coordinate.
+ * @param {number} y The starting y coordinate.
+ * @param {number} frac The fraction of a rotation by which to rotate (that is,
+ *     we rotate by frac * 2pi radians).
+ * @param {Array} shape An array of length 2 containing the dimensions of the image.
+ */
+function rotate(x, y, frac, shape) {
+    const centerX = shape[0] / 2;
+    const centerY = shape[1] / 2;
+    const xRelCenter = x - centerX
+    const yRelCenter = y - centerY
+    const cos = Math.cos(2 * Math.PI * frac);
+    const sin = Math.sin(2 * Math.PI * frac);
+    return [
+        Math.round(centerX + xRelCenter * cos - yRelCenter * sin),
+        Math.round(centerY + yRelCenter * cos + xRelCenter * sin),
+    ];
+}
+
+/**
  * Writes a party version of the given input image to the specified output stream.
  * @param {string} inputFilename A GIF image file to be partified
  * @param {stream.Writable} outputStream The stream where the partified image is to be written
  * @param {number} partyRadius The radius used to animate movement in the output image
+ * @param {number} rotationSpeed The speed of rotation in the output image (if desired)
  */
-function createPartyImage(inputFilename, outputStream, partyRadius) {
+function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpeed) {
     //TODO(somewhatabstract): Add other variations to radius, like tilt (for bobbling side to side)
     const partyOffset = [];
     colours.forEach((c, colourIndex) => {
@@ -64,14 +87,21 @@ function createPartyImage(inputFilename, outputStream, partyRadius) {
         colours.forEach(function(c, colourIndex) {
             const offset = partyOffset[colourIndex];
             const p = [];
+            let rotX, rotY;
 
             for (let y = 0; y < shape[1]; y += 1) {
                 for (let x = 0; x < shape[0]; x += 1) {
+                    if (rotationSpeed) {
+                        [rotX, rotY] = rotate(
+                            x, y, rotationSpeed * colourIndex / colours.length, shape);
+                    } else {
+                        [rotX, rotY] = [x, y];
+                    }
                     let g = getPixelValue(
                         greyscale,
                         shape,
-                        x + offset[0],
-                        y + offset[1]
+                        rotX + offset[0],
+                        rotY + offset[1]
                     );
 
                     if (g === -1) {

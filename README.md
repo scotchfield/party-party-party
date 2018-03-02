@@ -22,6 +22,11 @@ For example, `bin/ppp --radius=0 smile.png party.gif` will create a party versio
 
 ![Still Party Smile Emoji](./still-party-smile.gif "Still Party Smile Emoji")
 
+#### Rotation
+If you want the part emoji to rotate instead of (or in addition to!) moving, pass `--rotate=1`.  If you want it to rotate extra fast, try `--rotate=2` or more!
+
+![Rotating Party Smile Emoji](./rotating-party-smile.gif "Rotating Party Smile Emoji")
+
 ### Node
 ```
 const fs = require("fs");
