@@ -44,8 +44,9 @@ function rotate(x, y, frac, shape) {
  * @param {stream.Writable} outputStream The stream where the partified image is to be written
  * @param {number} partyRadius The radius used to animate movement in the output image
  * @param {number} rotationSpeed The speed of rotation in the output image (if desired)
+ * @param {Function} callback A function called when the gif has finished rendering (if desired)
  */
-function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpeed) {
+function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpeed, callback) {
     //TODO(somewhatabstract): Add other variations to radius, like tilt (for bobbling side to side)
     const partyOffset = [];
     colours.forEach((c, colourIndex) => {
@@ -73,8 +74,15 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
         gif.setRepeat(0);
         gif.setTransparent("0x00FF00");
         gif.writeHeader();
+        
         gif.on("readable", function() {
             gif.read();
+        });
+        
+        gif.on('end', function() {
+            if(typeof callback === "function"){
+                callback();
+            }
         });
 
         function getPixelValue(arr, shape, x, y) {
