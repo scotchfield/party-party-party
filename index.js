@@ -45,7 +45,7 @@ function rotate(x, y, frac, shape) {
  * @param {number} partyRadius The radius used to animate movement in the output image
  * @param {number} rotationSpeed The speed of rotation in the output image (if desired)
  */
-function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpeed) {
+function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpeed, callback) {
     //TODO(somewhatabstract): Add other variations to radius, like tilt (for bobbling side to side)
     const partyOffset = [];
     colours.forEach((c, colourIndex) => {
@@ -125,6 +125,7 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
         });
 
         gif.finish();
+        callback()
     }
 
     getPixels(inputFilename, processImage);
