@@ -66,7 +66,13 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
         const { shape } = pixels;
         const greyscale = toGreyscale(pixels);
 
-        const gif = new gifEncoder(shape[0], shape[1]);
+        const hasMultipleFrames = shape.length == 4
+
+        const width =  hasMultipleFrames ? shape[1] : shape[0]
+        const height = hasMultipleFrames ? shape[2] : shape[1]
+
+        const gif = new gifEncoder(width, height);
+        
         gif.pipe(outputStream);
 
         gif.setDelay(50);
@@ -76,12 +82,12 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
         gif.on("readable", function() {
             gif.read();
         });
-
-        function getPixelValue(arr, shape, x, y) {
-            if (x < 0 || x >= shape[0] || y < 0 || y >= shape[1]) {
+    
+        function getPixelValue(arr, x, y) {
+            if (x < 0 || x >= width || y < 0 || y >= height) {
                 return -1;
             }
-            return arr[x + y * shape[0]];
+            return arr[x + y * width];
         }
 
         colours.forEach(function(c, colourIndex) {
@@ -89,8 +95,8 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
             const p = [];
             let rotX, rotY;
 
-            for (let y = 0; y < shape[1]; y += 1) {
-                for (let x = 0; x < shape[0]; x += 1) {
+            for (let y = 0; y < height; y += 1) {
+                for (let x = 0; x < width; x += 1) {
                     if (rotationSpeed) {
                         [rotX, rotY] = rotate(
                             x, y, rotationSpeed * colourIndex / colours.length, shape);
@@ -99,7 +105,6 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
                     }
                     let g = getPixelValue(
                         greyscale,
-                        shape,
                         rotX + offset[0],
                         rotY + offset[1]
                     );
