@@ -26,8 +26,7 @@
   "bin": {
     "ppp": "./bin/ppp"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
     "get-pixels": "^3.3.0",
     "gif-encoder": "^0.6.1",
