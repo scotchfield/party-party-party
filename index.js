@@ -1,6 +1,5 @@
 const getPixels = require("get-pixels");
 const gifEncoder = require("gif-encoder");
-const toGreyscale = require("./lib/grayscale");
 
 // The party palette. Party on, Sirocco!
 const colours = [
@@ -38,6 +37,11 @@ function rotate(x, y, frac, shape) {
     ];
 }
 
+const MIN_FRAMES = 20;
+
+// Any pixel in the source with an alpha value lower than this will become a transparent pixel in the result
+const ALPHA_THRESHOLD = 64;
+
 /**
  * Writes a party version of the given input image to the specified output stream.
  * @param {string} inputFilename A GIF image file to be partified
@@ -45,16 +49,54 @@ function rotate(x, y, frac, shape) {
  * @param {number} partyRadius The radius used to animate movement in the output image
  * @param {number} rotationSpeed The speed of rotation in the output image (if desired)
  */
-function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpeed) {
+function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpeed, colorSpeed, noParty}) {
+
+    // IF we're rotating slower, then we'll need to increase the number of frames in order to get a full rotation
+    const frameCount = MIN_FRAMES * (rotationSpeed ? 1 / rotationSpeed : 1);
+
+    // We need a transparent color, so we're going green screen. If you got green, it'll be transparent. Sorry.
+    const transparentColor = [0, 255, 0, 0];
+
     //TODO(somewhatabstract): Add other variations to radius, like tilt (for bobbling side to side)
     const partyOffset = [];
-    colours.forEach((c, colourIndex) => {
+    const coloursByFrame = [];
+    const rotateAmounts = [];
+    for (let frameIndex = 0; frameIndex < frameCount; frameIndex += 1) {
         const x =
-            partyRadius * Math.sin(2 * Math.PI * (-colourIndex / colours.length));
+            partyRadius * Math.sin(-2 * Math.PI * (frameIndex / frameCount));
         const y =
-            partyRadius * Math.cos(2 * Math.PI * (-colourIndex / colours.length));
+            partyRadius * Math.cos(-2 * Math.PI * (frameIndex / frameCount));
         partyOffset.push([Math.round(x), Math.round(y)]);
-    });
+
+        const colourIndex = colorSpeed ? (Math.round((colorSpeed * frameIndex)) % colours.length) : 0;
+        coloursByFrame.push(colours[colourIndex]);
+
+        rotateAmounts.push(rotationSpeed ? frameIndex/frameCount : 0);
+    };
+
+    // Turns a one-dimensional pixel value array [r1,g1,b1,a1,r2,g2,b2,a2,...] into an array of [r,g,b,a] tuples
+    const parsePixelData = (pixelData) => {
+        const data = []; // Will be array of [r,g,b, a] tuples
+        for (var idx = 0; idx < pixelData.length; idx += 4) {
+            data.push([
+                pixelData[idx],
+                pixelData[idx+1],
+                pixelData[idx+2],
+                pixelData[idx+3],
+            ]);
+        }
+        return data;
+    };
+     
+    // Turns [r,g,b] into a hex string like '0x00FF00'
+    const toHexColor = ([r,g,b]) => {
+        const toHexValue = (c) => {
+            const s = c.toString(16).toUpperCase();
+            return s.length === 2 ? s : '0' + s;
+        };
+
+        return `0x${toHexValue(r)}${toHexValue(g)}${toHexValue(b)}`
+    };
 
     function processImage(err, pixels) {
         if (err) {
@@ -64,65 +106,64 @@ function createPartyImage(inputFilename, outputStream, partyRadius, rotationSpee
         }
 
         const { shape } = pixels;
-        const greyscale = toGreyscale(pixels);
+        const source = parsePixelData(pixels.data);
 
         const gif = new gifEncoder(shape[0], shape[1]);
         gif.pipe(outputStream);
 
         gif.setDelay(50);
         gif.setRepeat(0);
-        gif.setTransparent("0x00FF00");
+        gif.setTransparent(toHexColor(transparentColor));
         gif.writeHeader();
         gif.on("readable", function() {
             gif.read();
         });
 
-        function getPixelValue(arr, shape, x, y) {
+        function getPixelValue(x, y) {
             if (x < 0 || x >= shape[0] || y < 0 || y >= shape[1]) {
-                return -1;
+                return transparentColor;
             }
-            return arr[x + y * shape[0]];
+            return source[x + y * shape[0]];
         }
 
-        colours.forEach(function(c, colourIndex) {
-            const offset = partyOffset[colourIndex];
+        for (let frameIndex = 0; frameIndex < frameCount; frameIndex += 1) {
+            const colour = coloursByFrame[frameIndex];
+            const offset = partyOffset[frameIndex];
+            const rotateAmount = rotateAmounts[frameIndex];
+
             const p = [];
-            let rotX, rotY;
 
             for (let y = 0; y < shape[1]; y += 1) {
                 for (let x = 0; x < shape[0]; x += 1) {
-                    if (rotationSpeed) {
-                        [rotX, rotY] = rotate(
-                            x, y, rotationSpeed * colourIndex / colours.length, shape);
-                    } else {
-                        [rotX, rotY] = [x, y];
-                    }
-                    let g = getPixelValue(
-                        greyscale,
-                        shape,
+                    const [rotX, rotY] = rotate(x, y, rotateAmount, shape);
+                    let [r, g, b, a] = getPixelValue(
                         rotX + offset[0],
                         rotY + offset[1]
                     );
 
-                    if (g === -1) {
-                        p.push(0);
-                        p.push(255);
-                        p.push(0);
-                        p.push(0);
+                    if (a < ALPHA_THRESHOLD) {
+                        p.push(...transparentColor);
                     } else {
-                        g = g < 32 ? 32 : g;
-
-                        p.push(g * c[0] / 255);
-                        p.push(g * c[1] / 255);
-                        p.push(g * c[2] / 255);
-                        p.push(255);
+                        if (noParty) {
+                            // Original colors
+                            p.push(r);
+                            p.push(g);
+                            p.push(b);
+                            p.push(a);
+                        } else {
+                            // If party is enabled, then we'll greyscale the pixel and then apply colors to it
+                            const avg = Math.max(Math.round((r+b+g)/3), 32);
+                            p.push(avg * colour[0] / 255);
+                            p.push(avg * colour[1] / 255);
+                            p.push(avg * colour[2] / 255);
+                            p.push(a);
+                        }
                     }
                 }
             }
 
             gif.addFrame(p);
-            gif.flushData();
-        });
+        };
 
         gif.finish();
     }

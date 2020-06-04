@@ -24,8 +24,24 @@ For example, `bin/ppp --radius=0 smile.png party.gif` will create a party versio
 
 #### Rotation
 If you want the part emoji to rotate instead of (or in addition to!) moving, pass `--rotate=1`.  If you want it to rotate extra fast, try `--rotate=2` or more!
+Numbers less than 0 are also allowed: `--roate=0.5`!
 
 ![Rotating Party Smile Emoji](./rotating-party-smile.gif "Rotating Party Smile Emoji")
+
+#### Color Speed
+If you want to cycle through colors faster or slower, set this:
+```sh
+./bin/ppp --colorSpeed=0.5 smile.png color-speed-smile.png
+```
+![Color Speed Party Smile Emoji](./color-speed-smile.gif "Color Speed Party Smile Emoji")
+
+The default value is `1`. Set to a smaller number (like `0.5`) to make it cycle colors slower, and set to a higher speed to cycle faster.
+
+#### Disabling Party
+If you wish to disable the party and just simply have the original colors, that's cool too, I guess.
+```sh
+./bin/ppp --noParty=true smile.png no-party-smile.png
+```
 
 ### Node
 ```
