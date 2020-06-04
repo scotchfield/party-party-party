@@ -50,9 +50,8 @@ const ALPHA_THRESHOLD = 64;
  * @param {number} rotationSpeed The speed of rotation in the output image (if desired)
  */
 function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpeed, colorSpeed, noParty}) {
-
     // IF we're rotating slower, then we'll need to increase the number of frames in order to get a full rotation
-    const frameCount = MIN_FRAMES * (rotationSpeed ? 1 / rotationSpeed : 1);
+    const frameCount = MIN_FRAMES * (rotationSpeed ? 1 / Math.abs(rotationSpeed) : 1);
 
     // We need a transparent color, so we're going green screen. If you got green, it'll be transparent. Sorry.
     const transparentColor = [0, 255, 0, 0];
@@ -71,7 +70,7 @@ function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpe
         const colourIndex = colorSpeed ? (Math.round((colorSpeed * frameIndex)) % colours.length) : 0;
         coloursByFrame.push(colours[colourIndex]);
 
-        rotateAmounts.push(rotationSpeed ? frameIndex/frameCount : 0);
+        rotateAmounts.push(rotationSpeed ? (Math.sign(rotationSpeed) * frameIndex/frameCount) : 0);
     };
 
     // Turns a one-dimensional pixel value array [r1,g1,b1,a1,r2,g2,b2,a2,...] into an array of [r,g,b,a] tuples
