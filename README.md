@@ -46,6 +46,13 @@ You may also set a negative value to rotate the other direction
 ```
 ![Rotating Party Smile Emoji](./rotating-party-smile.gif "Rotating Party Smile Emoji")
 
+#### Background Party
+Setting `backgroundParty=true` will cause the background (transparent part) of the image to flash party colors instead of the main image.
+```sh
+./bin/ppp smile.png --backgroundParty=true background-party-smile.gif
+```
+![Background Party Smile Emoji](./background-party-smile.gif "Background Party Smile Emoji")
+
 #### No Party
 If you wish to disable the party and just simply have the original colors, that's cool too, I guess. Probably want to set one of the other options though.
 ```sh

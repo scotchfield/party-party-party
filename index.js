@@ -49,7 +49,7 @@ const ALPHA_THRESHOLD = 64;
  * @param {number} partyRadius The radius used to animate movement in the output image
  * @param {number} rotationSpeed The speed of rotation in the output image (if desired)
  */
-function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpeed, colorSpeed, noParty}) {
+function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpeed, colorSpeed, noParty, backgroundParty}) {
     // IF we're rotating slower, then we'll need to increase the number of frames in order to get a full rotation
     const frameCount = MIN_FRAMES * (rotationSpeed ? 1 / Math.abs(rotationSpeed) : 1);
 
@@ -113,6 +113,7 @@ function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpe
         gif.setDelay(50);
         gif.setRepeat(0);
         gif.setTransparent(toHexColor(transparentColor));
+        //gif.setQuality(1);
         gif.writeHeader();
         gif.on("readable", function() {
             gif.read();
@@ -141,9 +142,16 @@ function createPartyImage({inputFilename, outputStream, partyRadius, rotationSpe
                     );
 
                     if (a < ALPHA_THRESHOLD) {
-                        p.push(...transparentColor);
+                        if (backgroundParty) {
+                            p.push(colour[0]);
+                            p.push(colour[1]);
+                            p.push(colour[2]);
+                            p.push(255)
+                        } else {
+                            p.push(...transparentColor);
+                        }
                     } else {
-                        if (noParty) {
+                        if (noParty || backgroundParty) {
                             // Original colors
                             p.push(r);
                             p.push(g);
