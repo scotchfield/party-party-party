@@ -52,7 +52,7 @@ Setting a radius will cause your image to move in a circle. The value is the num
 
 #### Rotation
 
-Setting a rotation will cause your image to spin. We recommend setting values between 0 and 2. Some fractional values may appear jerky, so experiment with differnt ones. (Numbers like 0.25, 0.5, 1, and 2 work well.)
+Setting a rotation will cause your image to spin. We recommend setting values between 0 and 2. Some fractional values may appear jerky, so experiment with different ones. (Numbers like 0.25, 0.5, 1, and 2 work well.)
 You may also set a negative value to rotate the other direction
 
 ```sh
@@ -60,6 +60,16 @@ You may also set a negative value to rotate the other direction
 ```
 
 ![Rotating Party Smile Emoji](./rotating-party-smile.gif 'Rotating Party Smile Emoji')
+
+#### Bouncing Party
+
+Seeing a bounce speed will make the image bounce up and down. We recommend values between 5 and 15.
+
+```sh
+./bin/ppp smile.png --bounceSpeed=8 bouncing-party-smile.gif
+```
+
+![Bouncing Party Smile Emoji](./bouncing-party-smile.gif 'Bouncing Party Smile Emoji')
 
 #### Background Party
 
@@ -80,22 +90,3 @@ If you wish to disable the party and just simply have the original colors, that'
 ```
 
 ![No Party Smile Emoji](./no-party-smile.gif 'No Party Smile Emoji')
-
-### Programmatic Use
-
-(Note, currently there is no way to be alerted when the file is complete. This is a TODO.)
-
-```js
-const fs = require('fs');
-const party = require('party-party-party');
-
-const outputStream = fs.createWriteStream('heart.gif');
-party({
-  inputFilename: 'basic-heart.png',
-  outputStream,
-  partyRadius: 10,
-  rotationSpeed: 0.5,
-  colorSpeed: 1,
-  noParty: false,
-});
-```

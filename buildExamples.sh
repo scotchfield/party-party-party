@@ -14,6 +14,10 @@ echo "Building radius-party-smile.gif"
 echo "Building rotating-party-smile.gif"
 ./bin/ppp smile.png --rotate=0.5 rotating-party-smile.gif
 
+# Bouncing party
+echo "Building bouncing-party-smile.gif"
+./bin/ppp smile.png --bounceSpeed=8 bouncing-party-smile.gif
+
 # Background party
 echo "Building backgound-party-smile.gif"
 ./bin/ppp smile.png --backgroundParty=true background-party-smile.gif

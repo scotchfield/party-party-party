@@ -11,6 +11,13 @@ type GetPixelResults = {
   data: number[];
 };
 
+// Some transformations may increase this number in order to be smooth, but
+//  this will be the minimum number of frames the gif will contain.
+const MIN_FRAMES = 10;
+
+// Any pixel in the source with an alpha value lower than this will become a transparent pixel in the result
+const ALPHA_THRESHOLD = 64;
+
 // The party palette. Party on, Sirocco!
 const colours: Color[] = [
   [255, 141, 139, 255],
@@ -57,17 +64,13 @@ const getAlpha = (color: Color) => color[3];
 
 const getAverage = ([r, g, b]: Color) => Math.round((r + g + b) / 3);
 
-const MIN_FRAMES = 20;
-
-// Any pixel in the source with an alpha value lower than this will become a transparent pixel in the result
-const ALPHA_THRESHOLD = 64;
-
 interface Opts {
   inputFilename: string;
   outputStream: WriteStream;
   partyRadius: number;
   rotationSpeed: number;
   colorSpeed: number;
+  bounceSpeed: number;
   noParty: boolean;
   backgroundParty: boolean;
 }
@@ -84,6 +87,7 @@ export const createPartyImage = ({
   outputStream,
   partyRadius,
   rotationSpeed,
+  bounceSpeed,
   colorSpeed,
   noParty,
   backgroundParty,
@@ -99,10 +103,16 @@ export const createPartyImage = ({
   const partyOffset: [number, number][] = [];
   const coloursByFrame: Color[] = [];
   const rotateAmounts: number[] = [];
+  const bounceAmounts: [number, number][] = [];
   for (let frameIndex = 0; frameIndex < frameCount; frameIndex += 1) {
-    const x = partyRadius * Math.sin(-2 * Math.PI * (frameIndex / frameCount));
-    const y = partyRadius * Math.cos(-2 * Math.PI * (frameIndex / frameCount));
-    partyOffset.push([Math.round(x), Math.round(y)]);
+    partyOffset.push([
+      Math.round(
+        partyRadius * Math.sin(-2 * Math.PI * (frameIndex / frameCount))
+      ),
+      Math.round(
+        partyRadius * Math.cos(-2 * Math.PI * (frameIndex / frameCount))
+      ),
+    ]);
 
     const colourIndex = colorSpeed
       ? Math.round(colorSpeed * frameIndex) % colours.length
@@ -112,6 +122,13 @@ export const createPartyImage = ({
     rotateAmounts.push(
       rotationSpeed ? (Math.sign(rotationSpeed) * frameIndex) / frameCount : 0
     );
+
+    bounceAmounts.push([
+      0,
+      Math.round(
+        bounceSpeed * Math.sin((frameIndex / frameCount) * 2 * Math.PI)
+      ),
+    ]);
   }
 
   // Turns [r,g,b] into a hex string like '0x00FF00'
@@ -160,6 +177,7 @@ export const createPartyImage = ({
       const partyColor = coloursByFrame[frameIndex];
       const [xOffset, yOffset] = partyOffset[frameIndex];
       const rotateAmount = rotateAmounts[frameIndex];
+      const [bounceX, bounceY] = bounceAmounts[frameIndex];
 
       const frame: Color[] = [];
 
@@ -167,8 +185,8 @@ export const createPartyImage = ({
         for (let x = 0; x < width; x += 1) {
           const [rotX, rotY] = rotate(x, y, rotateAmount, width, height);
           const sourceColor = getColorFromSource(
-            rotX + xOffset,
-            rotY + yOffset
+            rotX + xOffset + bounceX,
+            rotY + yOffset + bounceY
           );
 
           if (getAlpha(sourceColor) < ALPHA_THRESHOLD) {
