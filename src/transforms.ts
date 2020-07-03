@@ -56,10 +56,10 @@ const backgroundParty: Transform = {
   },
 };
 
-const bounce: Transform<[number]> = {
+const bounce: Transform<[string]> = {
   name: 'bounce',
   fn: ({ getSourcePixel, coord, frameIndex, totalFrameCount, parameters }) => {
-    const bounceSpeed = parameters[0]; // TODO Validation
+    const bounceSpeed = parseFloat(parameters[0]); // TODO Validation
 
     const x = coord[0];
     const y =
@@ -93,10 +93,10 @@ const rotate: Transform = {
   },
 };
 
-const radius: Transform<[number]> = {
+const radius: Transform<[string]> = {
   name: 'radius',
   fn: ({ getSourcePixel, coord, frameIndex, totalFrameCount, parameters }) => {
-    const partyRadius = parameters[0]; // TODO validation
+    const partyRadius = parseFloat(parameters[0]); // TODO validation
 
     const xOffset = Math.round(
       partyRadius * Math.sin(-2 * Math.PI * (frameIndex / totalFrameCount))
@@ -109,4 +109,27 @@ const radius: Transform<[number]> = {
   },
 };
 
-export const transformsList = [party, backgroundParty, radius, rotate, bounce];
+const shocking: Transform<[string]> = {
+  name: 'static',
+  fn: ({ coord, getSourcePixel, parameters }) => {
+    const strength = parseFloat(parameters[0]);
+    const src = getSourcePixel(coord);
+
+    if (isTransparent(src)) {
+      return [0, 0, 0, 0];
+    }
+
+    const inverse = Math.ceil(Math.random() * strength) > 1;
+
+    return inverse ? [255 - src[0], 255 - src[1], 255 - src[2], src[3]] : src;
+  },
+};
+
+export const transformsList = [
+  party,
+  backgroundParty,
+  radius,
+  rotate,
+  bounce,
+  shocking,
+];

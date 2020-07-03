@@ -78,6 +78,20 @@ The `bounce` transformation will cause your image to move up and down. This take
 
 ---
 
+#### Static
+
+The `static` transformation will cause some pixels of your gif be inverse colors, causing a staticy/interference effect.
+This takes in one number parameter, where the higher it is, the more static
+A value of 1 means no static. Fractional values are allowed
+
+```sh
+./bin/ppp smile.png static-smile.gif static:2.5
+```
+
+![Static Smile Emoji](./examples/static-smile.gif 'Static Smile Emoji')
+
+---
+
 ## Combining transformations
 
 Multiple transformations may be combined by simply adding more to the arguments list. Be aware that the ordering of transformations may affect how things look.
@@ -90,8 +104,10 @@ Multiple transformations may be combined by simply adding more to the arguments 
 
 ---
 
+And if you really just want to go overboard...
+
 ```sh
-./bin/ppp smile.png everything-smile.gif rotate bounce:8 radius:5 background-party
+./bin/ppp smile.png everything-smile.gif static:1.5 rotate bounce:8 radius:5 background-party
 ```
 
 ![Everything Smile Emoji](./examples/everything-smile.gif 'Everything Smile Emoji')
