@@ -33,10 +33,10 @@ The `party` transformation will turn all foreground (non-transparent) pixels mul
 
 #### Background Party
 
-The `backgroundparty` transformation will turn all background (transparent) pixels multiple colors. This does not take any parameters.
+The `background-party` transformation will turn all background (transparent) pixels multiple colors. This does not take any parameters.
 
 ```sh
-./bin/ppp smile.png background-party-smile.gif backgroundParty
+./bin/ppp smile.png background-party-smile.gif background-party
 ```
 
 ![Background Party Smiling Emoji](./examples/background-party-smile.gif 'Background Party Smiling Emoji')
