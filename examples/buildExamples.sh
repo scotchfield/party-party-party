@@ -22,10 +22,14 @@ echo "Building rotating-smile.gif"
 echo "Building bouncing-smile.gif"
 ../bin/ppp smile.png bouncing-smile.gif bounce:8
 
+# Static
+echo "Building static-smile.gif"
+../bin/ppp smile.png static-smile.gif static:1.5
+
 # Bouncing Party
 echo "Building bouncing-party-smile.gif"
 ../bin/ppp smile.png bouncing-party-smile.gif bounce:8 party
 
 # Rotating Bouncing Radius Party
 echo "Building everything-smile.gif"
-../bin/ppp smile.png everything-smile.gif rotate bounce:8 radius:5 background-party
+../bin/ppp smile.png everything-smile.gif static:1.5 rotate bounce:8 radius:5 background-party
