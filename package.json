@@ -1,6 +1,6 @@
 {
   "name": "party-party-party",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Turn a source image into an animated party emoji",
   "repository": {
     "type": "git",
@@ -11,9 +11,9 @@
   },
   "license": "MIT",
   "contributors": [
+    "Michael Burkman <michael.burkman@gmail.com>",
     "Scott Grant <swrittenb@gmail.com>",
-    "Jeff Yates <jeff@somewhatabstract.com>",
-    "Michael Burkman <michael.burkman@gmail.com>"
+    "Jeff Yates <jeff@somewhatabstract.com>"
   ],
   "keywords": [
     "party",
@@ -31,7 +31,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "pretty": "prettier --write \"**/*.{js,md,ts}\""
+    "pretty": "prettier --write \"**/*.{js,md,ts}\"",
+    "start": "ts-node src/run.ts"
   },
   "dependencies": {
     "@types/node": "^12",

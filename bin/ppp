@@ -2,4 +2,4 @@
 
 require('ts-node').register();
 
-require('../lib/cli').run(__filename);
+require('../src/cli');
